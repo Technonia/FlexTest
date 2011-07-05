@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   minWidth="955" minHeight="600"
+			   creationComplete="init()" skinClass="MyScrollSkin">
+	
+	<fx:Declarations>
+		<s:ArrayCollection id="ac">
+			<fx:Object firstName="성훈" lastName="최" companyId="11" img="01.jpg" checked="true" />
+			<fx:Object firstName="순형" lastName="황" companyId="12" img="02.jpg" checked="false" />
+			<fx:Object firstName="형윤" lastName="박" companyId="13" img="03.jpg" checked="true" />
+			<fx:Object firstName="정모" lastName="이" companyId="14" img="04.jpg" checked="false" />
+			<fx:Object firstName="호민" lastName="이" companyId="15" img="05.jpg" checked="true" />
+			<fx:Object firstName="남경" lastName="김" companyId="16" img="06.jpg" checked="false" />
+		</s:ArrayCollection>
+		
+		<s:HTTPService id="hs" url="http://61.252.147.55:8080/FileUploadEx/upload/xml.do" result="hs_resultHandler(event)" />
+	</fx:Declarations>
+		
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		@namespace mx "library://ns.adobe.com/flex/mx";
+		.myLabel{
+		fontSize : 20;
+	    color : blue;
+		fontWeight : bold;
+		fontFamily : "맑은 고딕";
+		}
+	</fx:Style>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			
+			import spark.events.IndexChangeEvent;
+			
+			//test
+			private var studyMember:Array;
+			
+			[Bindable]
+			private var studyMemberAC:ArrayCollection;
+			
+			[Bindable]
+			public var allCheck:Boolean;
+			[Bindable]
+			public var httpserviceArrayCollection:ArrayCollection;
+			
+			protected function hs_resultHandler(event:ResultEvent):void
+			{
+				trace(event.result.BoardList.no );
+				httpserviceArrayCollection = event.result.BoardList.no as ArrayCollection;
+				
+				trace(ObjectUtil.toString(httpserviceArrayCollection));
+			}
+			
+			private function init():void{
+				studyMember = new Array();
+				studyMember.push("최성훈 (브라이언)");
+				studyMember.push("황순형 (필리시아)");
+				studyMember.push("박형윤 (코멧)");
+				studyMember.push("이정모 (정모)");
+				studyMember.push("이호민 (스폰지민)");
+				studyMember.push("김남경 (쌍쌍안경)");
+				
+				studyMemberAC = new ArrayCollection();
+				studyMemberAC.addItem({name:"최성훈"});
+				studyMemberAC.addItem({name:"황순형"});
+				studyMemberAC.addItem({name:"박형윤"});
+				studyMemberAC.addItem({name:"이정모"});
+				studyMemberAC.addItem({name:"이호민"});
+				studyMemberAC.addItem({name:"김남경"});
+			}
+			
+			protected function acADD_clickHandler(event:MouseEvent):void
+			{
+				dg.dataProvider.addItem({firstName:"태희",lastName:"김",companyId:"9999"});
+				
+			}
+			
+			protected function acRemove_clickHandler(event:MouseEvent):void
+			{
+				dg.dataProvider.removeItemAt(dg.dataProvider.length -1);
+				
+			}
+			
+			public function allChecked(event:MouseEvent):void 
+			{
+				
+				for(var i:uint = 0; i < dg2.dataProvider.length; i++)
+				{
+					if(allCheck)
+					{
+						//parentDocument.arrColl[i].active = false;
+						//dg2.dataProvider.getItemAt(i).checked =false;
+						ac[i].checked =false;
+					} else 
+					{
+						//dg2.dataProvider.getItemAt(i).checked =true;
+						ac[i].checked =true;
+					}
+					
+				}
+				allCheck = !allCheck;
+				ac.refresh();
+				trace("a");
+			}
+			
+			public function checkSelected():void{
+				var countActive:int=0;
+				
+				for (var i:uint=0; i < ac.length; i++)
+				{
+					if (ac[i].checked == true)
+					{
+						countActive++;
+					}
+				}
+				
+				if (ac.length == countActive)
+				{
+					allCheck=true;
+				}
+				else
+				{
+					allCheck=false;
+				}
+			}
+			
+			private function labelFunc(item:Object):String{
+				
+				return item.lastName + " " + item.firstName;
+			}
+			
+			protected function addBtn_clickHandler(event:MouseEvent):void
+			{
+				myButtonBar.dataProvider.addItem("추가된 버튼입니다.");
+				
+			}
+			
+			protected function removeBtn_clickHandler(event:MouseEvent):void
+			{
+				myButtonBar.dataProvider.removeItemAt(myButtonBar.dataProvider.length-1);
+				
+			}
+			
+			protected function myList_changeHandler(event:IndexChangeEvent):void
+			{
+				var currentIndex:int = event.currentTarget.selectedIndex;
+				var currentDataItem:Object = event.currentTarget.selectedItem;
+				
+				selIndex.text = String(currentIndex);
+				selLName.text = String(currentDataItem.lastName+currentDataItem.firstName);
+			}
+			
+			protected function myButtonBar_changeHandler(event:IndexChangeEvent):void
+			{
+				mx.controls.Alert.show(event.currentTarget.selectedItem,event.currentTarget.selectedIndex);
+			}
+			
+			import spark.layouts.HorizontalLayout;
+			import spark.layouts.TileLayout;
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				layoutList.layout = new HorizontalLayout();
+				
+			}
+			protected function button2_clickHandler(event:MouseEvent):void
+			{
+				layoutList.layout = new VerticalLayout();
+				
+			}
+			protected function button3_clickHandler(event:MouseEvent):void
+			{
+				layoutList.layout = new TileLayout();
+				
+			}
+			
+		]]>
+	</fx:Script>
+	
+		
+	
+	<s:layout>
+		<s:VerticalLayout />
+	</s:layout>
+	<s:Label text="기본 리스트 : DataProvidor + ArrayCollection" styleName="myLabel" />
+	<s:List>
+		<s:dataProvider>
+			<s:ArrayCollection>
+				<fx:String>최성훈 (브라이언)</fx:String>
+				<fx:String>황순형 (필리시아)</fx:String>
+				<fx:String>박형윤 (코멧)</fx:String>
+				<fx:String>이정모 (정모)</fx:String>
+				<fx:String>이호민 (스폰지민)</fx:String>
+				<fx:String>김남경 (쌍쌍안경)</fx:String>
+			</s:ArrayCollection>
+		</s:dataProvider>
+	</s:List>
+	
+	<s:Label text="기본 리스트 : Script로 생성한 ArrayCollection 연결" styleName="myLabel"/>
+	<s:List dataProvider="{studyMemberAC}" labelField="name">
+		
+	</s:List>
+	
+	<s:Label text="기본 리스트 : labelFunction을 통해 화면 표시" styleName="myLabel"/>
+	<s:List labelFunction="labelFunc">
+		<s:ArrayCollection>
+			<fx:Object firstName="성훈" lastName="최" companyId="11" />
+			<fx:Object firstName="순형" lastName="황" companyId="12" />
+			<fx:Object firstName="형윤" lastName="박" companyId="13" />
+			<fx:Object firstName="정모" lastName="이" companyId="14" />
+			<fx:Object firstName="호민" lastName="이" companyId="15" />
+			<fx:Object firstName="남경" lastName="김" companyId="16" />
+		</s:ArrayCollection>
+	</s:List>
+	
+	<s:Label text="버튼 바 : 추가 / 삭제 " styleName="myLabel" />
+	
+	<s:ButtonBar id="myButtonBar" change="myButtonBar_changeHandler(event)">
+		<s:ArrayCollection>
+			<fx:String>최성훈</fx:String>
+			<fx:String>황순형</fx:String>
+			<fx:String>박형윤</fx:String>
+			<fx:String>이정모</fx:String>
+			<fx:String>이호민</fx:String>
+			<fx:String>김남경</fx:String>
+		</s:ArrayCollection>
+	</s:ButtonBar>
+	<s:HGroup>
+		<s:Button id="addBtn" label="버튼추가" click="addBtn_clickHandler(event)" />
+		<s:Button id="removeBtn" label="버튼지우기" click="removeBtn_clickHandler(event)" />
+	</s:HGroup>
+	
+	<s:Label text="기본 리스트 : 리스트 안에서 레이아웃을 지정 할 수 있음." styleName="myLabel" />
+	<s:List id="layoutList">
+		<!--<s:layout>
+			<s:TileLayout />
+		</s:layout>-->
+		<s:ArrayCollection>
+			<fx:String>최성훈</fx:String>
+			<fx:String>황순형</fx:String>
+			<fx:String>박형윤</fx:String>
+			<fx:String>이정모</fx:String>
+			<fx:String>이호민</fx:String>
+			<fx:String>김남경</fx:String>
+		</s:ArrayCollection>
+	</s:List>
+	<s:HGroup>
+		<s:Button label="수평" click="button1_clickHandler(event)" />
+		<s:Button label="수직" click="button2_clickHandler(event)" />
+		<s:Button label="타일" click="button3_clickHandler(event)" />
+		
+	</s:HGroup>
+	
+	<s:Label text="기본 리스트 : 이벤트 처리." styleName="myLabel" />
+	<s:List id="myList" labelField="firstName" change="myList_changeHandler(event)">
+		<s:ArrayCollection>
+			<fx:Object firstName="성훈" lastName="최" companyId="11" />
+			<fx:Object firstName="순형" lastName="황" companyId="12" />
+			<fx:Object firstName="형윤" lastName="박" companyId="13" />
+			<fx:Object firstName="정모" lastName="이" companyId="14" />
+			<fx:Object firstName="호민" lastName="이" companyId="15" />
+			<fx:Object firstName="남경" lastName="김" companyId="16" />
+		</s:ArrayCollection>
+	</s:List>
+	
+	<s:Label text="Selected index:"/>
+	<s:TextArea id="selIndex" height="50"/>
+	
+	<s:Label text="Selected Last Name:"/>
+	<s:TextArea id="selLName" height="50"/>
+
+	<s:Label text="기본 리스트 : 이벤트 처리 2 CaretIndex" styleName="myLabel" />
+	<s:List id="myCaretList" labelField="firstName">
+		<s:ArrayCollection>
+			<fx:Object firstName="성훈" lastName="최" companyId="11" />
+			<fx:Object firstName="순형" lastName="황" companyId="12" />
+			<fx:Object firstName="형윤" lastName="박" companyId="13" />
+			<fx:Object firstName="정모" lastName="이" companyId="14" />
+			<fx:Object firstName="호민" lastName="이" companyId="15" />
+			<fx:Object firstName="남경" lastName="김" companyId="16" />
+		</s:ArrayCollection>
+	</s:List>
+	<s:Label text="the selected item is: {myCaretList.selectedIndex}" />
+	<s:Label text="the caret item is: {myCaretList.caretIndex}" />
+	
+	
+	<s:Label text="기본 리스트 : Item Renderer 사용" styleName="myLabel" />
+	<s:List id="itemRenderList" labelField="firstName" itemRenderer="TestRenderer" dragEnabled="true" dropEnabled="true" dragMoveEnabled="true">
+		<s:ArrayCollection>
+			<fx:Object firstName="성훈" lastName="최" companyId="11" />
+			<fx:Object firstName="순형" lastName="황" companyId="12" />
+			<fx:Object firstName="형윤" lastName="박" companyId="13" />
+			<fx:Object firstName="정모" lastName="이" companyId="14" />
+			<fx:Object firstName="호민" lastName="이" companyId="15" />
+			<fx:Object firstName="남경" lastName="김" companyId="16" />
+		</s:ArrayCollection>
+	</s:List>
+	
+	<s:Label text="데이타 그리드 아이템 입력/수정/삭제 " styleName="myLabel"  />
+	<s:DataGrid id="dg" dataProvider="{ac}" >
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn headerText="성" dataField="firstName" width="100" />
+				<s:GridColumn headerText="이름" dataField="lastName" width="100" />
+				<s:GridColumn headerText="아이디" dataField="companyId" width="100" />
+			</s:ArrayList>
+		</s:columns>
+	</s:DataGrid>
+	<s:HGroup>
+		<s:Button id="acADD" label="데이터 추가" click="acADD_clickHandler(event)" />
+		<s:Button id="acRemove" label="데이터 삭제" click="acRemove_clickHandler(event)" />
+	</s:HGroup>
+	
+	<s:Label text="DragDrop 데이터 그리드(MX:datagrid) " styleName="myLabel"   />
+	<mx:DataGrid dataProvider="{ac}" dragEnabled="true" dropEnabled="true" dragMoveEnabled="true">
+		<mx:columns>
+			<mx:DataGridColumn headerText="성" dataField="firstName" width="100" />
+			<mx:DataGridColumn headerText="이름" dataField="lastName" width="100" />
+			<mx:DataGridColumn headerText="아이디" dataField="companyId" width="100" />
+		</mx:columns>
+	</mx:DataGrid>
+	
+	<s:Label text="데이타 그리드 아이템 렌더러 사용" styleName="myLabel"   />
+	<s:HGroup verticalAlign="middle">
+	
+		<s:DataGrid id="dg2" dataProvider="{ac}" >
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn headerText="성" width="200">
+					<s:itemRenderer>
+						<fx:Component>
+							<s:GridItemRenderer>
+								<s:HGroup>
+									<s:Label text="성은 " />
+									<s:Label text="{data.firstName}" />
+									<s:Image source="ico.png" />
+								</s:HGroup>
+							</s:GridItemRenderer>
+						</fx:Component>
+					</s:itemRenderer>
+				</s:GridColumn>
+				<s:GridColumn headerText="이름" width="100" itemRenderer="TestDataGridRenderer" />
+				<s:GridColumn headerText="아이디" dataField="companyId" width="100" />
+				<s:GridColumn headerText="사진"  width="200" itemRenderer="TestDataGridImagerRenderer" />
+				<s:GridColumn width="200" headerRenderer="TestHeaderRenderer" itemRenderer="TestCheckBoxRenderer" />
+				<!--<s:headerRenderer>
+					<fx:Component>
+						<s:DefaultGridHeaderRenderer>
+							<s:HGroup>
+								<s:CheckBox  />	
+							</s:HGroup>
+						</s:DefaultGridHeaderRenderer>
+					</fx:Component>
+				</s:headerRenderer>-->
+				<!--</s:GridColumn>-->
+			</s:ArrayList>
+		</s:columns>
+	</s:DataGrid>
+		<s:TextArea id="ta" width="200" height="200" />
+	</s:HGroup>
+	
+	<s:HGroup>
+		
+	
+	<s:DataGrid id="httpDG" dataProvider="{httpserviceArrayCollection}" >
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn headerText="번호" dataField="no" width="100" />
+				<s:GridColumn headerText="이름" dataField="name" width="100" />
+				<s:GridColumn headerText="제목" dataField="subject" width="100" />
+				<s:GridColumn headerText="내용" dataField="content" width="100" />
+				<s:GridColumn headerText="작성일" dataField="regdate" width="100" />
+				<s:GridColumn headerText="조회수" dataField="readnum" width="100" />
+				<s:GridColumn headerText="파일명" dataField="filename" width="100" />
+				<s:GridColumn headerText="파일크기" dataField="filesize" width="100" />
+				<s:GridColumn headerText="영상보기" width="100" >
+					<s:itemRenderer>
+						<fx:Component>
+							<s:GridItemRenderer>
+								<s:Button label="영상보기" click="parentApplication.showVideo(data.filename)" />
+							</s:GridItemRenderer>
+						</fx:Component>
+					</s:itemRenderer>	
+				</s:GridColumn>
+				
+			</s:ArrayList>
+		</s:columns>
+	</s:DataGrid>
+		<s:VideoPlayer id="myVideo" autoPlay="false" width="300" height="300"/>
+	</s:HGroup>
+		
+	<s:Button label="https Rq" click="hs.send()" />
+	<fx:Script>
+		<![CDATA[
+			public function showVideo(str:String):void{
+				myVideo.source="#"+str;
+				myVideo.play();
+			}
+		]]>
+	</fx:Script>
+</s:Application>
